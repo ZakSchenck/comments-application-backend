@@ -1,9 +1,10 @@
-from flask import Flask, Blueprint, request, jsonify
+from datetime import timedelta
+from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity
+import validators
+from flask import Blueprint, request, jsonify
 from src.constants.http_status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
 from werkzeug.security import check_password_hash, generate_password_hash
 from src.database import User, db
-from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity
-import validators
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
@@ -59,7 +60,8 @@ def login():
     if user:
         is_pass_correct = check_password_hash(user.password, password)
         if is_pass_correct:
-            refresh = create_refresh_token(identity=user.id)
+            refresh_expiration = timedelta(days=30)
+            refresh = create_refresh_token(identity=user.id, expires_delta=refresh_expiration)
             access = create_access_token(identity=user.id)
 
             return jsonify({

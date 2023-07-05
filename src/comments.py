@@ -1,10 +1,8 @@
-import json
 from flask import Blueprint, request
 from flask.json import jsonify
 from src.database import Comment, db
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
-import validators
 
 from src.constants.http_status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
@@ -34,6 +32,7 @@ def get_or_create_comments():
 
         for comment in comments:
             data.append({
+                'body': comment.body,
                 'id': comment.id,
                 'created_at': comment.created_at,
                 'updated_at': comment.updated_at

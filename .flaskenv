@@ -1,4 +1,4 @@
-export FLASK_ENV=development
-export FLASK_APP=src
-export SQLALCHEMY_DB_URI=sqlite:///comments.db
-export JWT_SECRET_KEY='JWT_SECRET_KEY'
+FLASK_ENV=development
+FLASK_APP=src
+SQLALCHEMY_DATABASE_URI=sqlite:///instance/comments.db
+JWT_SECRET_KEY=JWT_SECRET_KEY

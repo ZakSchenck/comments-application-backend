@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import string
-import random
 
 db = SQLAlchemy()
 
