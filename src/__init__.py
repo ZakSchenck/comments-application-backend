@@ -16,7 +16,7 @@ def create_app(test_config=None):
             SQLALCHEMY_DATABASE_URI='sqlite:///../instance/comments.db',
             SQLALCHEMY_TRACK_MODIFICATIONS=False,
             JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY'),
-            JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),
+            JWT_ACCESS_TOKEN_EXPIRES=timedelta(days=30),
             JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30)
         )
     else:
