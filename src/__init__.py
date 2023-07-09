@@ -1,10 +1,11 @@
-from flask import Flask, send_from_directory, request
+from flask import Flask, send_from_directory
 import os
 from src.auth import auth
 from flask_cors import CORS
 from src.comments import comments
 from src.database import db
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -14,7 +15,9 @@ def create_app(test_config=None):
             SECRET_KEY=os.environ.get('SECRET_KEY'),
             SQLALCHEMY_DATABASE_URI='sqlite:///../instance/comments.db',
             SQLALCHEMY_TRACK_MODIFICATIONS=False,
-            JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY')
+            JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY'),
+            JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=15),
+            JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30)
         )
     else:
         app.config.from_mapping(test_config)
@@ -25,7 +28,7 @@ def create_app(test_config=None):
     app.register_blueprint(comments)
 
     # Enable CORS for all routes
-    CORS(app, origins='http://127.0.0.1:5173')
+    CORS(app, origins='*')
 
     with app.app_context():
         db.create_all()
