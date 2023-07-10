@@ -28,7 +28,7 @@ def create_app(test_config=None):
     app.register_blueprint(comments)
 
     # Enable CORS for all routes
-    CORS(app, origins='*')
+    CORS(app, origins='http://127.0.0.1:5173')
 
     with app.app_context():
         db.create_all()

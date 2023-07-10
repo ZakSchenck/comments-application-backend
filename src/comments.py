@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from flask.json import jsonify
 from src.database import Comment, db
 from flask_jwt_extended import get_jwt_identity
+from flask_cors import cross_origin
 from flask_jwt_extended.view_decorators import jwt_required
 
 from src.constants.http_status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
@@ -11,6 +12,7 @@ comments = Blueprint('comments', __name__, url_prefix='/api/v1/comments')
 
 @comments.route('/', methods=['POST', 'GET'])
 @jwt_required()
+@cross_origin()
 def get_or_create_comments():
     current_user = get_jwt_identity()
     if request.method == 'POST':
