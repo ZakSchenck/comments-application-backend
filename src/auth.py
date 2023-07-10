@@ -1,7 +1,7 @@
 from datetime import timedelta
-from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity
+from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity, set_access_cookies, set_refresh_cookies
 import validators
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from src.constants.http_status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
 from werkzeug.security import check_password_hash, generate_password_hash
 from src.database import User, db
@@ -49,7 +49,6 @@ def register_user():
             'email': email
         }
     }), HTTP_201_CREATED
-
 @auth.post('/login')
 def login():
     email = request.json.get('email', '')
@@ -62,16 +61,23 @@ def login():
         if is_pass_correct:
             refresh_expiration = timedelta(days=30)
             refresh = create_refresh_token(identity=user.id, expires_delta=refresh_expiration)
-            access = create_access_token(identity=user.id)
+            access_expiration = timedelta(hours=1)  # Adjust as per your requirements
+            access = create_access_token(identity=user.id, expires_delta=access_expiration)
 
-            return jsonify({
-                'user': {
-                    'refresh': refresh,
-                    'access': access,
-                    'username': user.username,
-                    'email': user.email
-                }
-            }), HTTP_200_OK
+            # Set cookies in the response
+            response = make_response(
+                jsonify({
+                    'user': {
+                        'refresh': refresh,
+                        'access': access,
+                        'username': user.username,
+                        'email': user.email
+                    }
+                }), HTTP_200_OK
+            )
+            set_access_cookies(response, access)
+            set_refresh_cookies(response, refresh)
+            return response
         return jsonify({'error': 'wrong credentials'}), HTTP_401_UNAUTHORIZED
     else: 
         return 'failed'
